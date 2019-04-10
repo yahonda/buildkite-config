@@ -107,9 +107,11 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
     volumes:
       - "./mysql-initdb.d:/docker-entrypoint-initdb.d"
+    tmpfs: /var/lib/mysql
 
   postgres:
     image: "${POSTGRES_IMAGE-postgres:alpine}"
+    tmpfs: /var/lib/postgresql/data
 
   rabbitmq:
     image: rabbitmq:alpine
