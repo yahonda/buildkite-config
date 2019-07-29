@@ -1,6 +1,8 @@
 ARG RUBY_IMAGE
 FROM ${RUBY_IMAGE:-ruby:latest}
 
+ENV BUNDLER_VERSION=2.1.0.pre.1
+
 ARG BUNDLER
 ARG RUBYGEMS
 RUN echo "--- :ruby: Updating RubyGems and Bundler" \
