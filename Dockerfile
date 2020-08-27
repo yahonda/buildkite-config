@@ -39,7 +39,6 @@ RUN echo "--- :ruby: Updating RubyGems and Bundler" \
         bzip2 \
         dpkg-dev \
         file \
-        g++ \
         gcc \
         imagemagick \
         libbz2-dev \
