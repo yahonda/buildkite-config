@@ -30,6 +30,10 @@ RUN echo "--- :ruby: Updating RubyGems and Bundler" \
     # Yarn apt sources
     && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add - \
     && echo "deb http://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
+    # Chrome
+    && touch /etc/default/google-chrome \
+    && curl -sS https://dl.google.com/linux/linux_signing_key.pub | APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1 apt-key add - \
+    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/chrome.list \
     # Install all the things
     && apt-get update \
     #  buildpack-deps
@@ -41,6 +45,7 @@ RUN echo "--- :ruby: Updating RubyGems and Bundler" \
         file \
         g++ \
         gcc \
+        google-chrome-stable \
         imagemagick \
         libbz2-dev \
         libc6-dev \
