@@ -4,6 +4,12 @@ FROM ${RUBY_IMAGE:-ruby:4.0}
 # Arbitrary value to force rebuilds
 ENV CACHE_INVALIDATION=1
 
+# Enable OpenSSL legacy provider so SHA1 is available for gem verification
+# (needed when using OpenSSL 3.x, e.g. rubylang/ruby:master)
+RUN printf 'openssl_conf = openssl_init\n\n[openssl_init]\nproviders = provider_sect\n\n[provider_sect]\ndefault = default_sect\nlegacy = legacy_sect\n\n[default_sect]\nactivate = 1\n\n[legacy_sect]\nactivate = 1\n' \
+    > /etc/ssl/openssl-legacy.cnf
+ENV OPENSSL_CONF=/etc/ssl/openssl-legacy.cnf
+
 ARG BUNDLER
 ARG RUBYGEMS
 RUN set -ex && echo "--- :ruby: Updating RubyGems and Bundler" \
