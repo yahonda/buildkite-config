@@ -94,7 +94,7 @@ RUN set -ex && echo "--- :ruby: Updating RubyGems and Bundler" \
     #  specific dependencies for the rails build
     && apt-get install -y --no-install-recommends \
         postgresql-client default-mysql-client sqlite3 \
-        git nodejs lsof \
+        git nodejs iproute2 lsof \
         ffmpeg mupdf mupdf-tools poppler-utils \
     # clean up
     && apt-get clean \
