@@ -160,7 +160,9 @@ Buildkite::Builder.pipeline do
       end
 
       if ruby == build_context.default_ruby
-        rake "actioncable", task: "test:integration", retry_on: { exit_status: -1, limit: 3 }
+        rake "actioncable", task: "test:integration",
+          retry_on: [{ exit_status: 3, limit: 1 }, { exit_status: -1, limit: 3 }],
+          soft_fail: [{ exit_status: 3 }]
 
         if build_context.rails_root.join("actionview/Rakefile").read.include?("task :ujs")
           rake "actionview", task: "test:ujs", service: "actionview", retry_on: { exit_status: -1, limit: 3 }

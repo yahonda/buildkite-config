@@ -370,6 +370,29 @@ class TestRakeCommand < TestCase
     assert_equal({ "automatic" => [{ "limit" => 1, "exit_status" => 127 }] }, pipeline.to_h["steps"][0]["retry"])
   end
 
+  def test_automatic_retry_on_array
+    pipeline = PipelineFixture.new do
+      build_context.ruby = Buildkite::Config::RubyConfig.new(version: Gem::Version.new("3.2"))
+      use Buildkite::Config::RakeCommand
+
+      build_context.stub(:rails_version, Gem::Version.new("7.1")) do
+        rake "test_automatic_retry_on", retry_on: [
+          { limit: 1, exit_status: 127 },
+          { limit: 3, exit_status: 3 },
+        ]
+      end
+    end
+
+    assert_includes pipeline.to_h["steps"][0], "retry"
+    assert_equal(
+      { "automatic" => [
+        { "limit" => 1, "exit_status" => 127 },
+        { "limit" => 3, "exit_status" => 3 },
+      ] },
+      pipeline.to_h["steps"][0]["retry"]
+    )
+  end
+
   def test_soft_fail
     pipeline = PipelineFixture.new do
       build_context.ruby = Buildkite::Config::RubyConfig.new(version: Gem::Version.new("3.2"))
@@ -382,6 +405,20 @@ class TestRakeCommand < TestCase
 
     assert_includes pipeline.to_h["steps"][0], "soft_fail"
     assert_equal true, pipeline.to_h["steps"][0]["soft_fail"]
+  end
+
+  def test_soft_fail_array
+    pipeline = PipelineFixture.new do
+      build_context.ruby = Buildkite::Config::RubyConfig.new(version: Gem::Version.new("3.2"))
+      use Buildkite::Config::RakeCommand
+
+      build_context.stub(:rails_version, Gem::Version.new("7.1")) do
+        rake "test_soft_fail", soft_fail: [{ exit_status: 127 }]
+      end
+    end
+
+    assert_includes pipeline.to_h["steps"][0], "soft_fail"
+    assert_equal [{ "exit_status" => 127 }], pipeline.to_h["steps"][0]["soft_fail"]
   end
 
   def test_soft_fail_ruby
