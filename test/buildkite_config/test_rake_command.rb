@@ -191,10 +191,7 @@ class TestRakeCommand < TestCase
     assert_equal ".buildkite.tgz", download["compressed"]
   end
 
-  def test_compose_hosted
-    @before_env_compute_type = ENV["BUILDKITE_COMPUTE_TYPE"]
-    ENV["BUILDKITE_COMPUTE_TYPE"] = "hosted"
-
+  def test_compose
     pipeline = PipelineFixture.new do
       build_context.ruby = Buildkite::Config::RubyConfig.new(prefix: "ruby:", version: Gem::Version.new("3.2"))
       use Buildkite::Config::RakeCommand
@@ -221,43 +218,6 @@ class TestRakeCommand < TestCase
     assert_equal "true", compose["tty"]
     assert_equal ".buildkite/docker-compose.yml", compose["config"]
     assert_equal ["runner", "test"], compose["shell"]
-  ensure
-    ENV["BUILDKITE_COMPUTE_TYPE"] = @before_env_compute_type
-  end
-
-  def test_compose_self_hosted
-    @before_env_compute_type = ENV["BUILDKITE_COMPUTE_TYPE"]
-    ENV["BUILDKITE_COMPUTE_TYPE"] = "self-hosted"
-
-    pipeline = PipelineFixture.new do
-      build_context.ruby = Buildkite::Config::RubyConfig.new(prefix: "ruby:", version: Gem::Version.new("3.2"))
-      use Buildkite::Config::RakeCommand
-
-      build_context.stub(:rails_version, Gem::Version.new("7.1")) do
-        rake "test", task: "test:all"
-      end
-    end
-
-    plugins = pipeline.to_h["steps"][0]["plugins"]
-
-    compose = plugins.find { |plugin|
-      plugin.key?(plugins_map[:compose])
-    }.fetch(plugins_map[:compose])
-
-    %w[env run cli-version config shell tty].each do |key|
-      assert_includes compose, key
-    end
-
-    assert_includes compose["env"], "PRE_STEPS"
-    assert_includes compose["env"], "RACK"
-
-    assert_equal "default", compose["run"]
-    assert_equal "1", compose["cli-version"]
-    assert_equal "true", compose["tty"]
-    assert_equal ".buildkite/docker-compose.yml", compose["config"]
-    assert_equal ["runner", "test"], compose["shell"]
-  ensure
-    ENV["BUILDKITE_COMPUTE_TYPE"] = @before_env_compute_type
   end
 
   def test_multiple
