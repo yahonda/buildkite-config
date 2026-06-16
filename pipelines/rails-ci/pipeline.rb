@@ -7,7 +7,7 @@ Buildkite::Builder.pipeline do
   use Buildkite::Config::RakeCommand
   use Buildkite::Config::RubyGroup
 
-  plugin :docker_compose, "docker-compose#v5.6.0"
+  plugin :docker_compose, "docker-compose#v5.12.1"
   plugin :artifacts, "artifacts#v1.9.3"
   plugin :secrets, "cluster-secrets#v1.0.0"
 
@@ -161,11 +161,16 @@ Buildkite::Builder.pipeline do
 
       if ruby == build_context.default_ruby
         rake "actioncable", task: "test:integration",
-          retry_on: [{ exit_status: 3, limit: 1 }, { exit_status: -1, limit: 3 }],
+          retry_on: [
+            { exit_status: 3, limit: 1 },
+            { exit_status: 18, limit: 2 },
+            { exit_status: -1, limit: 3 },
+          ],
           soft_fail: [{ exit_status: 3 }]
 
         if build_context.rails_root.join("actionview/Rakefile").read.include?("task :ujs")
-          rake "actionview", task: "test:ujs", service: "actionview", retry_on: { exit_status: -1, limit: 3 }
+          rake "actionview", task: "test:ujs", service: "actionview",
+            retry_on: [{ exit_status: 18, limit: 2 }, { exit_status: -1, limit: 3 }]
         end
       end
 
