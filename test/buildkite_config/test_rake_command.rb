@@ -207,7 +207,7 @@ class TestRakeCommand < TestCase
       plugin.key?(plugins_map[:compose])
     }.fetch(plugins_map[:compose])
 
-    %w[env run config shell tty].each do |key|
+    %w[env run pull pull-retries config shell tty].each do |key|
       assert_includes compose, key
     end
 
@@ -215,6 +215,8 @@ class TestRakeCommand < TestCase
     assert_includes compose["env"], "RACK"
 
     assert_equal "default", compose["run"]
+    assert_equal ["default", "--include-deps"], compose["pull"]
+    assert_equal 3, compose["pull-retries"]
     assert_equal "true", compose["tty"]
     assert_equal ".buildkite/docker-compose.yml", compose["config"]
     assert_equal ["runner", "test"], compose["shell"]
@@ -263,11 +265,13 @@ class TestRakeCommand < TestCase
       plugin.key?(plugins_map[:compose])
     }.fetch(plugins_map[:compose])
 
-    %w[run].each do |key|
+    %w[run pull pull-retries].each do |key|
       assert_includes compose, key
     end
 
     assert_equal "myservice", compose["run"]
+    assert_equal ["myservice", "--include-deps"], compose["pull"]
+    assert_equal 3, compose["pull-retries"]
   end
 
   def test_env_yjit
@@ -489,6 +493,8 @@ class TestRakeCommand < TestCase
 
     refute_includes compose, "env"
     assert_equal "default", compose["run"]
+    assert_equal ["default", "--include-deps"], compose["pull"]
+    assert_equal 3, compose["pull-retries"]
     assert_equal ".buildkite/docker-compose.yml", compose["config"]
     assert_equal ["runner", "."], compose["shell"]
 

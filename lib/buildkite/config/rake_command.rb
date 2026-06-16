@@ -58,6 +58,8 @@ module Buildkite::Config
         compose_opts = {
           "env" => env,
           "run" => service,
+          "pull" => [service, "--include-deps"],
+          "pull-retries" => 3,
           "config" => ".buildkite/docker-compose.yml",
           "shell" => ["runner", *dir],
           "tty" => "true",
