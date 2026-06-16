@@ -193,7 +193,7 @@ With your directories in place, you can now proceed to step 3, building the base
 We'll use a Ruby version 3.3 image for the base.
 
 ```
-RUBY_IMAGE="ruby:3.3" docker-compose -f .buildkite/docker-compose.yml build base
+RUBY_IMAGE="ruby:3.3" docker compose -f .buildkite/docker-compose.yml build base
 ```
 
 NOTE: any changes your make to your Rails checkout will have to repeat the build process.
@@ -205,7 +205,7 @@ Now you can run tasks inside the docker container.
 For example, if we wanted to run the Active Record tests for SQLite3.
 
 ```
-IMAGE_NAME=buildkite-base RUBY_IMAGE=ruby:3.3 docker-compose -f .buildkite/docker-compose.yml run default runner activerecord 'rake sqlite3:test'
+IMAGE_NAME=buildkite-base RUBY_IMAGE=ruby:3.3 docker compose -f .buildkite/docker-compose.yml run default runner activerecord 'rake sqlite3:test'
 ```
 
 

@@ -63,10 +63,6 @@ module Buildkite::Config
           "tty" => "true",
         }
 
-        if build_context.self_hosted?
-          compose_opts["cli-version"] = "1"
-        end
-
         plugin :docker_compose, compose_opts.compact
       end
     end
