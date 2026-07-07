@@ -139,6 +139,7 @@ ADD */*.gemspec tmp/
 ADD .buildkite/.empty tools/*/releaser.gemspec tools/releaser/
 ADD .buildkite/.empty railties/exe/* railties/exe/
 ADD Gemfile Gemfile.lock RAILS_VERSION rails.gemspec ./
+ENV BUNDLE_BUILD__LIBXML___RUBY="--with-cflags=-DONIG_ESCAPE_UCHAR_COLLISION"
 
 RUN rm -f railties/exe/.empty \
     && find railties/exe -maxdepth 0 -type d -empty -exec rmdir '{}' '+' \
